@@ -1,0 +1,38 @@
+{
+  "name": "passport-nft",
+  "version": "1.0.0",
+  "description": "NFT ownership authentication strategy for Passport and Node.js.",
+  "main": "./lib",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aznrogerazn/passport-js.git"
+  },
+  "keywords": [
+    "passport",
+    "nft",
+    "auth",
+    "authentication",
+    "nonce",
+    "metamask"
+  ],
+  "author": {
+    "name": "yuuko.eth",
+    "email": "aznrogerazn@gmail.com",
+    "url": "https://twitter.com/punished_yuko"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aznrogerazn/passport-js/issues"
+  },
+  "homepage": "https://github.com/aznrogerazn/passport-js#readme",
+  "devDependencies": {
+    "eslint": "^8.20.0",
+    "eslint-config-egg": "^12.0.0"
+  },
+  "dependencies": {
+    "passport-strategy": "^1.0.0"
+  }
+}
