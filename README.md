@@ -1,12 +1,8 @@
 # passport-nft
 
-[Passport](https://passportjs.org/) strategy for authenticating with an NFT and nonce.
+[Passport](https://passportjs.org/) strategy for authenticating with an NFT and a signed challenge for added security. Best used with dApps and a Node.js back-end.
 
-This module lets you authenticate using an on-chain (defaults to Web3/EVM combo)
-NFT and an off-chain database. By using Passport, it's a very simple process for
-anyone to integrate their own NFT authentication strategy. This module follows
-[Connect](https://www.senchalabs.org/connect/)-styled middleware, and can be used
-with [Express.js](https://expressjs.com/) or [Koa.js](https://koajs.com/).
+This module lets you authenticate using an on-chain (defaults to Web3/EVM combo) NFT and an off-chain challenge record (usually using a database for long term storage). By using Passport, its very easy for anyone to integrate their own NFT authentication strategy. This module follows [Connect](https://www.senchalabs.org/connect/)-styled middleware, and can be used with [Express.js](https://expressjs.com/) or [Koa.js](https://koajs.com/) and their variants.
 
 ---
 
@@ -16,14 +12,38 @@ with [Express.js](https://expressjs.com/) or [Koa.js](https://koajs.com/).
 $ npm install https://github.com/aznrogerazn/passport-nft.git --save
 ```
 
+This module requires `web3.js` to work, since it needs to access on-chain NFT data. Please refer to [Web3.js documentation](https://web3js.readthedocs.io/) for the instance initialisation.
+
 ## Usage
+
+#### NFT Contract
+
+Please make sure your NFT has the following interface (minimal requirement):
+
+ERC-721:
+
+```solidity
+function balanceOf(address account) external view returns (uint256);
+```
+
+ERC-1155:
+
+```solidity
+function balanceOf(address account, uint256 id) external view returns (uint256);
+```
+
+This Strategy will check the balance of the address with `balanceOf` function after verifying the encrypted challenge. Make sure your wallet address owns the specified NFT to allow authentication. Pass in the address for your NFT in the `Strategy` options.
+
+For Chain ID, it is determined by the `Web3` instance you pass to `Strategy` initialisation. Please make sure it matches with the chain of your NFT deployment.
 
 #### Configure Strategy
 
 The NFT authentication strategy incorporates two elements, after which, the control is passed to your own `verify` function to implement challenge string update or other features (such as issuing a Cookie contianing access token):
 
-1. A signed challenge string (with its original obtainable with `getChallenge` option), that will signed with wallet address calling the login.
+1. A prefixed challenge string (with its original obtainable with `getChallenge` option), that will signed with wallet address calling the login.
 2. An NFT to check balance against, with your specified list of token IDs.
+
+In other words, your `verify` function will **only** be run if the challenge is verified (matches with `address`), and the `address` owns the NFT. Otherwise, failure to satisfy those requirements will make the Strategy to call `fail` on Passport framework.
 
 Example configuration:
 ```js
@@ -35,6 +55,7 @@ passport.use(new NFTStrategy(
   //               should return a challenge string.
   getChallenge: service.users.getChallengeByAddress,
   tokenStandard: 1155, // 721 or 1155
+  // @note `tokenIds` is only required for ERC1155
   tokenIds: [1, 2, 3], // Scan those IDs for balance
   //                      only wallets with balance are allowed in
   nftAddress: '0x064f...', // Contract address for the NFT
