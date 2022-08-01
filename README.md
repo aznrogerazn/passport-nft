@@ -38,12 +38,12 @@ For Chain ID, it is determined by the `Web3` instance you pass to `Strategy` ini
 
 #### Configure Strategy
 
-The NFT authentication strategy incorporates two elements, after which, the control is passed to your own `verify` function to implement challenge string update or other features (such as issuing a Cookie contianing access token):
+The NFT authentication strategy incorporates two elements, after which, the control is passed to your own `verify` function to implement challenge string update or other features (such as issuing a Cookie containing access token; this module does not set session):
 
 1. A prefixed challenge string (with its original obtainable with `getChallenge` option), that will signed with wallet address calling the login.
 2. An NFT to check balance against, with your specified list of token IDs.
 
-In other words, your `verify` function will **only** be run if the challenge is verified (matches with `address`), and the `address` owns the NFT. Otherwise, failure to satisfy those requirements will make the Strategy to call `fail` on Passport framework.
+In other words, your `verify` function will **only** be run if the challenge is verified (matches with `address`), **and** the `address` owns the NFT. Otherwise, failure to satisfy those requirements will make the Strategy to call `fail` on Passport framework. (`401`)
 
 Example configuration:
 ```js
@@ -69,10 +69,11 @@ passport.use(new NFTStrategy(
   customTokenABI: [], // @dev (Reserved)
 },
 // {Web3} Web3.js Instance
-// Reused for each call to save resource
+// @note Reused for each call to save resource
 new Web3('https://bsc-dataseed1.binance.org:443'),
 // {Function} Verify function
-// You can customise this 
+// @note NFT ownership and signature is alreadt verified by this point
+//       Customise your own behaviour here
 (request, userInfo, done) => {
   const { method, url } = request;
   const { Users } = app.model;
