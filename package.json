@@ -1,6 +1,6 @@
 {
   "name": "passport-nft",
-  "version": "1.0.0",
+  "version": "1.0.9",
   "description": "NFT ownership authentication strategy for Passport and Node.js.",
   "main": "./lib",
   "scripts": {
@@ -28,10 +28,6 @@
     "url": "https://github.com/aznrogerazn/passport-js/issues"
   },
   "homepage": "https://github.com/aznrogerazn/passport-js#readme",
-  "devDependencies": {
-    "eslint": "^8.20.0",
-    "eslint-config-egg": "^12.0.0"
-  },
   "dependencies": {
     "passport-strategy": "^1.0.0"
   }
