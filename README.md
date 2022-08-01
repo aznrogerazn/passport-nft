@@ -9,7 +9,7 @@ This module lets you authenticate using an on-chain (defaults to Web3/EVM combo)
 ## Install
 
 ```bash
-$ npm install https://github.com/aznrogerazn/passport-nft.git --save
+$ npm install passport-nft --save
 ```
 
 This module requires `web3.js` to work, since it needs to access on-chain NFT data. Please refer to [Web3.js documentation](https://web3js.readthedocs.io/) for the instance initialisation.
@@ -110,6 +110,13 @@ Use `passport.authenticate()`, pass in `"nft"` or your specified `strategyIdenti
 As of `web3.js` 1.7.0, you may assemble the headers like so:
 
 ```js
+/**
+ * @function getLoginHeaders
+ * @description front-end function to get login headers
+ * @param {Web3} web3 This is the web3 instance to use
+ * @param {String} addressField Field name in header for address
+ * @param {String} challengeField Field name in header for signed challenge
+ */
 async function getLoginHeaders(
   web3,
   addressField = 'wallet_address',
@@ -133,6 +140,12 @@ async function getLoginHeaders(
   _header[challengeField] = signature;
   return _header;
 };
+
+/**
+ * @function loginByNft
+ * @description front-end function to call login/authentication
+ * @param {Web3} web3 This is the web3 instance to use
+ */
 async function loginByNft(web3) {
   const headers = await getLoginHeaders(web3);
   // This will be the call to your authenticate route,

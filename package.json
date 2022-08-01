@@ -1,6 +1,6 @@
 {
   "name": "passport-nft",
-  "version": "1.0.9",
+  "version": "1.0.10-alpha",
   "description": "NFT ownership authentication strategy for Passport and Node.js.",
   "main": "./lib",
   "scripts": {
