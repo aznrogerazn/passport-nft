@@ -63,28 +63,37 @@ passport.use(new NFTStrategy(
 {
   // @dev essential fields:
   // @note getChallenge {Function} a function accepting `address`
-  //        as parameter and should return a challenge string.
-  getChallenge: service.users.getChallengeByAddress,
+  //       as parameter and should return a challenge string.
+  getChallenge: service.wallets.getChallengeByAddress,
   // @note challenge {String} fallback string if `getChallenge`
-  //       is not supplied or failed during execution. Default
-  //       value below.
+  //      is not supplied or failed during execution. Default
+  //      value below.
   challenge: 'a_simple_challenge_from_api_server',
-  tokenStandard: 1155, // 721 or 1155
+  // @note tokenStandard {Number} token standard: 721 or 1155
+  tokenStandard: 1155,
   // @note tokenIds {Array} is only required for ERC1155
-  //       Scan those IDs for balance; only wallets with
-  //       balance are allowed in
-  tokenIds: [1, 2, 3],    
-  // @note nftAddress {String} Contract address for the NFT
-  nftAddress: '0x064f...',
+  //       Will scan those IDs for balance:
+  tokenIds: [ 1, 2, 3 ],
+  nftAddress: '0x55d398326f99059fF775485246999027B3197955',
   // @dev optional fields:
-  passReqToCallback: true, // Enables `request` param to third verification function
-  // @note Strategy identifier in Passport. Default value below.
+  // @note addressField {String} header field name: address
+  addressField: 'wallet_address',
+  // @note challengeField {String} header field name: encrypted
+  //       challenge
+  challengeField: 'encrypted_challenge',
+  // @dev key {String} prefix to the challenge before encryption.
+  //      Default value below
+  key: 'nft:auth_',
+  // @note strategyIdentifier {String} Strategy identifier in Passport.
+  //       Default value below
   strategyIdentifier: 'nft',
-  addressField: 'wallet_address', // Header field name: address
-  challengeField: 'encrypted_challenge', // Header field name: signed challenge
-  key: 'NFT_AUTH_', // Prefix for the challenge string to encrypt
-  autoGrantUser: false, // Set to true to generate a default UserInfo for user object
-  customTokenABI: [], // (Reserved)
+  // @note passReqToCallback {Boolean} Do I pass `req` to `verify` as
+  //       its first param? Default value below
+  passReqToCallback: true,
+  // @note autoGrantUser {Boolean} Do I attach `userInfo` to `req`?
+  autoGrantUser: false,
+  // @note Reserved.
+  customTokenABI: [],
 },
 // {Web3} Web3.js Instance
 // @note Reused for each call to save resource
