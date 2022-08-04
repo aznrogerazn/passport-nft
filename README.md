@@ -40,10 +40,21 @@ For Chain ID, it is determined by the `Web3` instance you pass to `Strategy` ini
 
 The NFT authentication strategy incorporates two elements, after which, the control is passed to your own `verify` function to implement challenge string update or other features (such as issuing a Cookie containing access token; this module does not set session):
 
-1. A prefixed challenge string (with its original obtainable with `getChallenge` option), that will signed with wallet address calling the login.
-2. An NFT to check balance against, with your specified list of token IDs.
+1. A prefixed challenge string that's signed by the caller address (with its original form obtainable with `getChallenge` option). This encrypted string is checked against the `address` you pass in. If the framework detects an error during verification, it will automatically `401`.
+2. An NFT to check balance against, with your specified list of token IDs. With ERC-721, `balanceOf` is called with `address`; with ERC-1155, an array of `tokenIds`, and with `address`. If the `address` does not own the specified `nftAddress` NFT, it will result in a `401`.
 
 In other words, your `verify` function will **only** be run if the challenge is verified (matches with `address`), **and** the `address` owns the NFT. Otherwise, failure to satisfy those requirements will make the Strategy to call `fail` on Passport framework. (`401`)
+
+Example `userInfo` passed to your verify function (more below):
+```javascript
+(request, userInfo, done) => {
+  // e.g. NFTStrategy passes such userInfo to you
+  const {
+    address = "0x000...",
+    nftBalance = 3,
+  } = userInfo;
+}
+```
 
 Example configuration:
 ```js
@@ -51,22 +62,29 @@ passport.use(new NFTStrategy(
 // {Object} Strategy Option
 {
   // @dev essential fields:
-  // getChallenge: a function accepting `address` as parameter and
-  //               should return a challenge string.
+  // @note getChallenge {Function} a function accepting `address`
+  //        as parameter and should return a challenge string.
   getChallenge: service.users.getChallengeByAddress,
+  // @note challenge {String} fallback string if `getChallenge`
+  //       is not supplied or failed during execution. Default
+  //       value below.
+  challenge: 'a_simple_challenge_from_api_server',
   tokenStandard: 1155, // 721 or 1155
-  // @note `tokenIds` is only required for ERC1155
-  tokenIds: [1, 2, 3], // Scan those IDs for balance
-  //                      only wallets with balance are allowed in
-  nftAddress: '0x064f...', // Contract address for the NFT
+  // @note tokenIds {Array} is only required for ERC1155
+  //       Scan those IDs for balance; only wallets with
+  //       balance are allowed in
+  tokenIds: [1, 2, 3],    
+  // @note nftAddress {String} Contract address for the NFT
+  nftAddress: '0x064f...',
   // @dev optional fields:
   passReqToCallback: true, // Enables `request` param to third verification function
-  strategyIdentifier: 'nft-for-vip', // Customise Strategy identifier
+  // @note Strategy identifier in Passport. Default value below.
+  strategyIdentifier: 'nft',
   addressField: 'wallet_address', // Header field name: address
   challengeField: 'encrypted_challenge', // Header field name: signed challenge
   key: 'NFT_AUTH_', // Prefix for the challenge string to encrypt
   autoGrantUser: false, // Set to true to generate a default UserInfo for user object
-  customTokenABI: [], // @dev (Reserved)
+  customTokenABI: [], // (Reserved)
 },
 // {Web3} Web3.js Instance
 // @note Reused for each call to save resource
@@ -89,11 +107,11 @@ new Web3('https://bsc-dataseed1.binance.org:443'),
       // Initialise challenge string with chance.js
       challenge: (new Chance()).string({ alpha: true, numeric: true, }),
     },
-  }).then(userObject => {
+  }).then(userInfo => {
     // You may update the challenge string for this User
     // And finally, call done() with first parameter being null
     // (because first parameter is for error)
-    done(null, userObject);
+    done(null, userInfo);
   }).catch(dbErr => {
     // You may return 4xx or 5xx here, depending on the framework
     // of choice
