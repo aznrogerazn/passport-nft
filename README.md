@@ -38,7 +38,7 @@ For Chain ID, it is determined by the `Web3` instance you pass to `Strategy` ini
 
 #### Configure Strategy
 
-The NFT authentication strategy incorporates two elements, after which, the control is passed to your own `verify` function to implement challenge string update or other features (such as issuing a Cookie containing access token; this module does not set session):
+The NFT authentication strategy incorporates two elements, after which, the control is passed to your own `verify` function to implement challenge string update or other features (such as issuing a Cookie containing access token; please note that this module does not set session):
 
 1. A prefixed challenge string that's signed by the caller address (with its original form obtainable with `getChallenge` option). This encrypted string is checked against the `address` you pass in. If the framework detects an error during verification, it will automatically `401`.
 2. An NFT to check balance against, with your specified list of token IDs. With ERC-721, `balanceOf` is called with `address`; with ERC-1155, an array of `tokenIds`, and with `address`. If the `address` does not own the specified `nftAddress` NFT, it will result in a `401`.
