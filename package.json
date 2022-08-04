@@ -25,9 +25,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aznrogerazn/passport-js/issues"
+    "url": "https://github.com/aznrogerazn/passport-nft/issues"
   },
-  "homepage": "https://github.com/aznrogerazn/passport-js#readme",
+  "homepage": "https://github.com/aznrogerazn/passport-nft#readme",
   "dependencies": {
     "passport-strategy": "^1.0.0"
   }
